@@ -9,3 +9,4 @@ Os temas abordados aqui seguem a sequência:
 6. Filtragem no Domínio da Frequência;
 7. Detectação de Bordas com Algoritmo de Canny;
 8. Quantização Vetorial com K-means.
+9. Assuntos Aleatórios.
