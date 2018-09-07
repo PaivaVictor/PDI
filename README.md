@@ -10,3 +10,4 @@ Os temas abordados aqui seguem a sequência:
 7. Detectação de Bordas com Algoritmo de Canny;
 8. Quantização Vetorial com K-means.
 9. Assuntos Aleatórios.
+As programações contidas nessas temáticas foram desenvolvidas em linguagem C++, utilizando sistema operacional Ubuntu.
