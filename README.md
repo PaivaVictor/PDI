@@ -8,6 +8,6 @@ Os temas abordados aqui seguem a sequência:
 5. Filtragem no Domínio Espacial II;
 6. Filtragem no Domínio da Frequência;
 7. Detectação de Bordas com Algoritmo de Canny;
-8. Quantização Vetorial com K-means.
+8. Quantização Vetorial com K-means;
 9. Assuntos Aleatórios.
 As programações contidas nessas temáticas foram desenvolvidas em linguagem C++, utilizando sistema operacional Ubuntu.
