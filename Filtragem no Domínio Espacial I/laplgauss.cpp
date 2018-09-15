@@ -21,13 +21,14 @@ void menu(){
     "v - vertical\n"
 	"h - horizontal\n"
     "l - laplaciano\n"
+    "p - Laplaciano e Gaussiano\n"
 	"esc - sair\n";
 }
 
 int main(int argvc, char** argv){
   VideoCapture video;
   float media[] = {1,1,1,
-				   1,1,1,
+				   1,4,1,
 				   1,1,1};
   float gauss[] = {1,2,1,
 				   2,4,2,
@@ -42,6 +43,9 @@ int main(int argvc, char** argv){
 					 -1,4,-1,
 					 0,-1,0};
 
+  float laplgauss[]={-2,-4,-2,
+					6,12,6,
+					-2,-4,-2};
 
   Mat cap, frame, frame32f, frameFiltered;
   Mat mask(3,3,CV_32F), mask1;
@@ -59,14 +63,6 @@ int main(int argvc, char** argv){
   std::cout << "altura =" << height<< "\n";;
 
   namedWindow("filtroespacial",1);
-
-  for(int q=0; q<=3; q++){
-		for(int w=0; w<=3; w++){
-			for(int e=0; e<=3;e++){
-				laplgauss(q,w) = laplgauss(q,w) +laplacian(q+e,w)*gauss(q,w+e);
-		}
-		}
-	}
 
   mask = Mat(3, 3, CV_32F, media); 
   scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
@@ -88,7 +84,10 @@ int main(int argvc, char** argv){
     frameFiltered.convertTo(result, CV_8U);
     imshow("filtroespacial", result);
     key = (char) waitKey(10);
-    if( key == 27 ) break; // esc pressed!
+    if( key == 27 ){
+	imwrite("foto.png", result);
+	break; // esc pressed
+}
     switch(key){
     case 'a':
 	  menu();
@@ -122,7 +121,13 @@ int main(int argvc, char** argv){
 	  menu();
       mask = Mat(3, 3, CV_32F, laplacian);
       printmask(mask);
-    
+      break;
+    case 'p':
+	  menu();
+      mask = Mat(3, 3, CV_32F, laplgauss);
+      scaleAdd(mask, 1/16.0, Mat::zeros(3,3,CV_32F), mask1);
+      mask = mask1;
+      printmask(mask);
       break;
     default:
       break;
