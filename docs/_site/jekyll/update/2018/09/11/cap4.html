@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Manipulação de Histogramas | Processamento Digital de Imagens</title>
+<meta name="generator" content="Jekyll v3.8.3" />
+<meta property="og:title" content="Manipulação de Histogramas" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Problema 1:" />
+<meta property="og:description" content="Problema 1:" />
+<link rel="canonical" href="http://localhost:4000/jekyll/update/2018/09/11/cap4.html" />
+<meta property="og:url" content="http://localhost:4000/jekyll/update/2018/09/11/cap4.html" />
+<meta property="og:site_name" content="Processamento Digital de Imagens" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-09-11T19:26:10-03:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"http://localhost:4000/jekyll/update/2018/09/11/cap4.html","headline":"Manipulação de Histogramas","dateModified":"2018-09-11T19:26:10-03:00","datePublished":"2018-09-11T19:26:10-03:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/jekyll/update/2018/09/11/cap4.html"},"description":"Problema 1:","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Processamento Digital de Imagens" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Processamento Digital de Imagens</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">3. Manipulação de Histogramas</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-09-11T19:26:10-03:00" itemprop="datePublished">Sep 11, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Problema 1:</p>
+
+<p>O código abaixo, equalizacao.cpp, utiliza uma câmera webcam, e portanto, uma nova classe do OpenCV, VideoCapture. O algoritmo irá realizar a equalização (melhor distribuição do histograma pelo spectro de tons) das imagens em tons de cinza capturadas pela webcam, frame a frame, e exibir o histograma dessas imagens juntamente da imagem equalizada.</p>
+
+<p>O Programa equalizacao.cpp:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#include &lt;iostream&gt;</span>
+<span class="c1">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">cv</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="n">int</span> <span class="n">main</span><span class="p">(</span><span class="n">int</span> <span class="n">argc</span><span class="p">,</span> <span class="n">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="no">Mat</span> <span class="n">image</span><span class="p">,</span> <span class="n">cinza</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">),</span> <span class="n">equalized</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">);</span>
+  <span class="n">int</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">;</span>
+  <span class="no">VideoCapture</span> <span class="n">cap</span><span class="p">;</span>
+  <span class="no">Mat</span> <span class="n">histC</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">),</span> <span class="n">equa</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">);</span>
+  <span class="n">int</span> <span class="n">nbins</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">float</span> <span class="n">range</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">};</span>
+  <span class="n">const</span> <span class="n">float</span> <span class="o">*</span><span class="n">histrange</span> <span class="o">=</span> <span class="p">{</span> <span class="n">range</span> <span class="p">};</span>
+  <span class="n">bool</span> <span class="n">uniform</span> <span class="o">=</span> <span class="kp">true</span><span class="p">;</span>
+  <span class="n">bool</span> <span class="n">acummulate</span> <span class="o">=</span> <span class="kp">false</span><span class="p">;</span>
+
+  <span class="n">cap</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  
+  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">cap</span><span class="p">.</span><span class="nf">isOpened</span><span class="p">()){</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"cameras indisponiveis"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="n">width</span>  <span class="o">=</span> <span class="n">cap</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="no">CV_CAP_PROP_FRAME_WIDTH</span><span class="p">);</span>
+  <span class="n">height</span> <span class="o">=</span> <span class="n">cap</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="no">CV_CAP_PROP_FRAME_HEIGHT</span><span class="p">);</span>
+
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"largura = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"altura  = "</span> <span class="o">&lt;&lt;</span> <span class="n">height</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">int</span> <span class="n">histw</span> <span class="o">=</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">histh</span> <span class="o">=</span> <span class="n">nbins</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+  <span class="no">Mat</span> <span class="n">histImgC</span><span class="p">(</span><span class="n">histh</span><span class="p">,</span> <span class="n">histw</span><span class="p">,</span> <span class="no">CV_8U</span><span class="p">,</span> <span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+  <span class="no">Mat</span> <span class="n">histEquC</span><span class="p">(</span><span class="n">histh</span><span class="p">,</span> <span class="n">histw</span><span class="p">,</span> <span class="no">CV_8U</span><span class="p">,</span> <span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+  <span class="n">namedWindow</span><span class="p">(</span><span class="s2">"Histograma"</span><span class="p">,</span><span class="no">WINDOW_AUTOSIZE</span><span class="p">);</span>
+
+  <span class="k">while</span><span class="p">(</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">!=</span><span class="mi">32</span><span class="p">){</span>
+    <span class="n">cap</span> <span class="o">&gt;&gt;</span> <span class="n">image</span><span class="p">;</span>
+	<span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="n">cinza</span><span class="p">,</span><span class="no">CV_BGR2GRAY</span><span class="p">);</span>
+
+	<span class="n">equalizeHist</span><span class="p">(</span><span class="n">cinza</span><span class="p">,</span> <span class="n">equalized</span><span class="p">);</span>
+
+	<span class="n">calcHist</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cinza</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="no">Mat</span><span class="p">(),</span><span class="n">histC</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">&amp;</span><span class="n">nbins</span><span class="p">,</span><span class="o">&amp;</span><span class="n">histrange</span><span class="p">,</span><span class="n">uniform</span><span class="p">,</span><span class="n">acummulate</span><span class="p">);</span>  <span class="sr">//</span><span class="no">Histograma</span> <span class="n">para</span> <span class="n">imagem</span> <span class="n">cinza</span> <span class="n">normal</span>
+	<span class="n">normalize</span><span class="p">(</span><span class="n">histC</span><span class="p">,</span> <span class="n">histC</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">histImgC</span><span class="p">.</span><span class="nf">rows</span><span class="p">,</span> <span class="no">NORM_MINMAX</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="no">Mat</span><span class="p">());</span>
+  	<span class="n">histImgC</span><span class="p">.</span><span class="nf">setTo</span><span class="p">(</span><span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+	<span class="n">calcHist</span><span class="p">(</span><span class="o">&amp;</span><span class="n">equalized</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="no">Mat</span><span class="p">(),</span><span class="n">equa</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">&amp;</span><span class="n">nbins</span><span class="p">,</span><span class="o">&amp;</span><span class="n">histrange</span><span class="p">,</span><span class="n">uniform</span><span class="p">,</span><span class="n">acummulate</span><span class="p">);</span> <span class="sr">//</span><span class="no">Histograma</span> <span class="n">para</span> <span class="n">imagem</span> <span class="n">cinza</span> <span class="n">equalizada</span>
+	<span class="n">normalize</span><span class="p">(</span><span class="n">equa</span><span class="p">,</span> <span class="n">equa</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">histImgC</span><span class="p">.</span><span class="nf">rows</span><span class="p">,</span> <span class="no">NORM_MINMAX</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="no">Mat</span><span class="p">());</span>
+  	<span class="n">histEquC</span><span class="p">.</span><span class="nf">setTo</span><span class="p">(</span><span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">nbins</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="n">line</span><span class="p">(</span><span class="n">histImgC</span><span class="p">,</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="p">),</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="o">-</span><span class="n">cvRound</span><span class="p">(</span><span class="n">histC</span><span class="p">.</span><span class="nf">at</span><span class="o">&lt;</span><span class="n">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">))),</span>
+           <span class="no">Scalar</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+	<span class="n">histImgC</span><span class="p">.</span><span class="nf">copyTo</span><span class="p">(</span><span class="n">cinza</span><span class="p">(</span><span class="no">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">nbins</span><span class="p">,</span> <span class="n">histh</span><span class="p">)));</span>
+	<span class="n">imshow</span><span class="p">(</span><span class="s2">"Histograma"</span><span class="p">,</span> <span class="n">cinza</span><span class="p">);</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">nbins</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="n">line</span><span class="p">(</span><span class="n">histEquC</span><span class="p">,</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="p">),</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="o">-</span><span class="n">cvRound</span><span class="p">(</span><span class="n">equa</span><span class="p">.</span><span class="nf">at</span><span class="o">&lt;</span><span class="n">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">))),</span>
+           <span class="no">Scalar</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+	<span class="n">histEquC</span><span class="p">.</span><span class="nf">copyTo</span><span class="p">(</span><span class="n">equalized</span><span class="p">(</span><span class="no">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">nbins</span><span class="p">,</span> <span class="n">histh</span><span class="p">)));</span>
+     	<span class="n">imshow</span><span class="p">(</span><span class="s2">"Equalizado"</span><span class="p">,</span> <span class="n">equalized</span><span class="p">);</span>
+
+    <span class="n">imshow</span><span class="p">(</span><span class="s2">"image"</span><span class="p">,</span> <span class="n">image</span><span class="p">);</span>
+  
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Neste algoritmo foram utilizadas funções prontas do OpenCV tanto para realizar a conversão das imagens em RGB capturadas pela câmera (“cvtColor(image,cinza,CV_BGR2GRAY)”) quanto para calcular o histograma (“calcHist(&amp;equalized,1,0,Mat(),equa,1,&amp;nbins,&amp;histrange,uniform,acummulate)”) e realizar a equalização (“equalizeHist(cinza, equalized)”).</p>
+
+<p>A matriz “equalized” guarda a imagem equalizada, enquanto a matriz “cinza” guarda a imagem recém-capturada, apenas convertida para tons de cinza.</p>
+
+<p>Problema 2:</p>
+
+<p>Agora, o programa acima foi modificado para calcular, continuamente, diferenças entre o histograma do frame mais recente e o histograma de um frame anterior, com o intuito de detectar movimentos entre os dois frames utilizados para cálculo dos histogramas. O algoritmo foi chamado de motiondetector.cpp e está detalhado a seguir:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#include &lt;iostream&gt;</span>
+<span class="c1">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">cv</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="n">int</span> <span class="n">main</span><span class="p">(</span><span class="n">int</span> <span class="n">argc</span><span class="p">,</span> <span class="n">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+  <span class="no">Mat</span> <span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">,</span> <span class="n">cinza1</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">),</span> <span class="n">cinza2</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="mi">256</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">);</span>
+  <span class="n">int</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">;</span>
+  <span class="no">VideoCapture</span> <span class="n">cap1</span><span class="p">;</span>
+  <span class="no">Mat</span> <span class="n">histC1</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">),</span> <span class="n">histC2</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="no">CV_8U</span><span class="p">);</span>
+  <span class="n">int</span> <span class="n">nbins</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">float</span> <span class="n">range</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">},</span> <span class="n">tolerancia</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">distancia</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">const</span> <span class="n">float</span> <span class="o">*</span><span class="n">histrange</span> <span class="o">=</span> <span class="p">{</span> <span class="n">range</span> <span class="p">};</span>
+  <span class="n">bool</span> <span class="n">uniform</span> <span class="o">=</span> <span class="kp">true</span><span class="p">;</span>
+  <span class="n">bool</span> <span class="n">acummulate</span> <span class="o">=</span> <span class="kp">false</span><span class="p">;</span>
+
+  <span class="n">cap1</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  
+  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">cap1</span><span class="p">.</span><span class="nf">isOpened</span><span class="p">()){</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"cameras indisponiveis"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="n">width</span>  <span class="o">=</span> <span class="n">cap1</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="no">CV_CAP_PROP_FRAME_WIDTH</span><span class="p">);</span>
+  <span class="n">height</span> <span class="o">=</span> <span class="n">cap1</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="no">CV_CAP_PROP_FRAME_HEIGHT</span><span class="p">);</span>
+
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"largura = "</span> <span class="o">&lt;&lt;</span> <span class="n">width</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"altura  = "</span> <span class="o">&lt;&lt;</span> <span class="n">height</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  
+  <span class="n">int</span> <span class="n">histw</span> <span class="o">=</span> <span class="n">nbins</span><span class="p">,</span> <span class="n">histh</span> <span class="o">=</span> <span class="n">nbins</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+  <span class="no">Mat</span> <span class="n">histImgC1</span><span class="p">(</span><span class="n">histh</span><span class="p">,</span> <span class="n">histw</span><span class="p">,</span> <span class="no">CV_8U</span><span class="p">,</span> <span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+  <span class="k">while</span><span class="p">(</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="o">!=</span><span class="mi">32</span><span class="p">){</span>
+
+    
+	<span class="n">cap1</span> <span class="o">&gt;&gt;</span> <span class="n">image1</span><span class="p">;</span>
+	<span class="n">cvtColor</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span><span class="n">cinza1</span><span class="p">,</span><span class="no">CV_BGR2GRAY</span><span class="p">);</span>
+	<span class="n">waitKey</span><span class="p">(</span><span class="mi">50</span><span class="p">);</span>
+
+	<span class="n">calcHist</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cinza1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="no">Mat</span><span class="p">(),</span><span class="n">histC1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">&amp;</span><span class="n">nbins</span><span class="p">,</span><span class="o">&amp;</span><span class="n">histrange</span><span class="p">,</span><span class="n">uniform</span><span class="p">,</span><span class="n">acummulate</span><span class="p">);</span>  <span class="sr">//</span><span class="no">Histograma</span> <span class="n">para</span> <span class="n">imagem</span> <span class="n">cinza</span> <span class="n">normal</span>
+	<span class="n">normalize</span><span class="p">(</span><span class="n">histC1</span><span class="p">,</span> <span class="n">histC1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">histImgC1</span><span class="p">.</span><span class="nf">rows</span><span class="p">,</span> <span class="no">NORM_MINMAX</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="no">Mat</span><span class="p">());</span>
+  	<span class="n">histImgC1</span><span class="p">.</span><span class="nf">setTo</span><span class="p">(</span><span class="no">Scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+	<span class="n">cap1</span> <span class="o">&gt;&gt;</span> <span class="n">image2</span><span class="p">;</span>
+	<span class="n">cvtColor</span><span class="p">(</span><span class="n">image2</span><span class="p">,</span><span class="n">cinza2</span><span class="p">,</span><span class="no">CV_BGR2GRAY</span><span class="p">);</span>
+	
+	<span class="n">calcHist</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cinza2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="no">Mat</span><span class="p">(),</span><span class="n">histC2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">&amp;</span><span class="n">nbins</span><span class="p">,</span><span class="o">&amp;</span><span class="n">histrange</span><span class="p">,</span><span class="n">uniform</span><span class="p">,</span><span class="n">acummulate</span><span class="p">);</span>
+
+	<span class="n">distancia</span><span class="o">=</span><span class="n">compareHist</span><span class="p">(</span><span class="n">histC2</span><span class="p">,</span><span class="n">histC1</span><span class="p">,</span><span class="no">CV_COMP_BHATTACHARYYA</span><span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">distancia</span><span class="o">*</span><span class="mi">100</span><span class="o">&gt;</span><span class="n">tolerancia</span><span class="p">){</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">"Movimento!!"</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">nbins</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="n">line</span><span class="p">(</span><span class="n">histImgC1</span><span class="p">,</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="p">),</span>
+           <span class="no">Point</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">histh</span><span class="o">-</span><span class="n">cvRound</span><span class="p">(</span><span class="n">histC1</span><span class="p">.</span><span class="nf">at</span><span class="o">&lt;</span><span class="n">float</span><span class="o">&gt;</span><span class="p">(</span><span class="n">i</span><span class="p">))),</span>
+           <span class="no">Scalar</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+	<span class="n">histImgC1</span><span class="p">.</span><span class="nf">copyTo</span><span class="p">(</span><span class="n">cinza1</span><span class="p">(</span><span class="no">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="n">nbins</span><span class="p">,</span> <span class="n">histh</span><span class="p">)));</span>
+	<span class="n">imshow</span><span class="p">(</span><span class="s2">"Tom Cinza"</span><span class="p">,</span> <span class="n">cinza1</span><span class="p">);</span>
+
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Para esse algortimo utiliza-se uma função que calcula a “distância” entre os histogramas, ou seja calcula a diferença. Para realizar isto o OpenCV disponibiliza uma função (“compareHist(histC2,histC1,CV_COMP_BHATTACHARYYA)”), que recebe como parâmetros apenas os histogramas que serão calculados e o tipo de comparação que se deseja realizar. No caso desse algoritmo foi utilizado o método de distância de Bhattacharyya. É importante obserjar que o programa recebe em dois momentos as imagens capturadas pelas câmera, nas linhas 37 e 45. E ainda, entre estas duas aquisições de imagens, o programa aguarda 50 ms, através da função “waitKey(50)”, para garantir que as imagens são minimamente diferentes.</p>
+
+<p>A função “compareHist” retorna um valor menor do que “1”, e por isso, a variável de armazenamento deste valor foi definida como float. Caso essa variável apresente valor maior do que a tolerância estabelecida (“5”), o programa imprime na tela a mensagem: “Movimento!!”. A tolerância foi definida como “5” apenas, devido o retorno da função “compareHist” ser bem próximo de “0” para ausência de movimento, e acima de “5” para alguns movimentos, mesmo que suaves, em frente a câmera.</p>
+
+
+  </div><a class="u-url" href="/jekyll/update/2018/09/11/cap4.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Processamento Digital de Imagens</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Processamento Digital de Imagens</li><li><a class="u-email" href="mailto:victor_p.o@hotmail.com">victor_p.o@hotmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/PaivaVictor"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">PaivaVictor</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Este blog apresenta algumas atividades e exercícios referentes a processamento digital de imagens</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
