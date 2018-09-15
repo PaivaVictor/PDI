@@ -1,0 +1,165 @@
+---
+layout: post
+title:  "5. Filtragem no Domínio Espacial II"
+date:   2018-09-11 19:26:10 -0300
+categories: jekyll update
+---
+Problema 1:
+
+O programa descrito em labeling.cpp (logo em seguida), usado como base para exercícios que envolvem o preenchimento de regiões, contém um pequeno problema. Devido a sua limitação de exibição de tonalidades de cinza destinguíveis para o ser humano, caso a imagem apresenta mais de 255 objetos, esse algoritmo não poderá rotular todos eles devido o spectro de visualização desses tons ser limitado em 255. 
+
+A proposta é adaptar o algoritmo para o sistema RGB, assim haverá 16581375 (255³) de rótulos possíveis.
+
+Programa labeling.cpp:
+
+{% highlight ruby %}
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+
+int main(int argc, char** argv){
+  Mat image, mask;
+  int width, height;
+  int nobjects;
+  
+  CvPoint p;
+  image = imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
+  
+  if(!image.data){
+    std::cout << "imagem nao carregou corretamente\n";
+    return(-1);
+  }
+  width=image.size().width;
+  height=image.size().height;
+
+  p.x=0;
+  p.y=0;
+
+  // busca objetos com buracos presentes
+  nobjects=0;
+  for(int i=0; i<height; i++){
+    for(int j=0; j<width; j++){
+      if(image.at<uchar>(i,j) == 255){
+		// achou um objeto
+		nobjects++;
+		p.x=j;
+		p.y=i;
+		floodFill(image,p,nobjects);
+	  }
+	}
+  }
+  imshow("image", image);
+  imwrite("labeling.png", image);
+  waitKey();
+  return 0;
+}
+{% endhighlight %}
+
+Problema 2: 
+
+Utilizando o mesmo programa labeling.cpp como base, uma nova versão, cap3.cpp, irá remover as bolhas das bordas da imagem e contar o número de bolhas e o número de buracos (pois nem todas as bolhas tem buracos, com a imagem em questão). O algoritmo utiliza a função "floodFill" do OpenCV que precisa de 3 argumentos. O primeiro é a imagem trabalhada, ou seja do tipo "Mat", o segundo o apontador do pixel, que pega as coordenadas dele em x e y, e por fim a tonalidade que se deseja aplicar ao rótulo.
+
+O algoritmo está descrito da seguinte forma:
+
+{% highlight ruby %}
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+using namespace std;
+
+void limpaborda (Mat &imagem, int h, int w){
+int i=0,j=0, cont2;
+CvPoint z;
+z.x = 0;
+z.y = 0;
+
+	for(cont2=1; cont2<=2; cont2++){ // retirando bolhas das linhas: 0 e 255;
+		for(j=0; j<w; j++){
+			if(imagem.at<uchar>(i,j) == 255){
+			z.x = j;
+			z.y = i;
+			floodFill(imagem,z,0);		
+			}
+		}
+		i = 255;
+	}
+  j = 0;
+	for(cont2=1;cont2<=2; cont2++){ // retirando bolhas das colunas: 0 e 255;
+		for(i=0; i<h; i++){
+			if(imagem.at<uchar>(i,j) == 255){
+			z.x = j;
+			z.y = i;
+			floodFill(imagem,z,0);		
+			}
+		}
+		j = 255;
+	}
+}
+
+void contaburaco (Mat &imagem, int h, int w){
+int i=0,j=0, bolhas=0, buracos=0, margem=50; // margem: para efeito visual, diferenciar um tom do outro
+CvPoint z;
+z.x = 0;
+z.y = 0;
+
+  if(imagem.at<uchar>(i,j)==0){ // diferencia o fundo dos buracos das bolhas
+	z.x = j;
+	z.y = i;
+	floodFill(imagem,z,margem);
+  }
+
+  namedWindow("função",WINDOW_AUTOSIZE);
+  imshow("função", imagem);
+	for(i=0; i < h; i++){
+		for(j=0; j < w;j++){
+			if(imagem.at<uchar>(i,j) == 255){ // pinta o contorno da bolha com outro tom de cinza
+			z.x = j;
+			z.y = i;
+			floodFill(imagem,z,2*margem);
+			bolhas++;
+			}
+			if(imagem.at<uchar>(i,j) == 0){ // pinta o buraco com outro tom de cinza
+			cout << "entrei" << endl;
+			z.x = j;
+			z.y = i;
+			floodFill(imagem,z,3*margem);
+			buracos++;
+			}		
+		}
+	}
+  cout << "Número de bolhas:" << bolhas << endl;
+  cout << "Número de buracos:" << buracos << endl;
+  cout << bolhas - buracos <<" bolhas não tem buracos" << endl;
+}
+
+int main(){
+  Mat image, copy;
+  int height, width;
+
+  image= imread("bolhas.png",CV_LOAD_IMAGE_GRAYSCALE);
+  if(!image.data)
+    cout << "nao abriu bolhas.png" << endl;
+  namedWindow("janela",WINDOW_AUTOSIZE);
+
+  height = image.size().height;
+  width = image.size().width;
+  copy.create(height,width,CV_8U);
+
+  limpaborda(image, height, width);
+
+  contaburaco(image, height, width);
+
+  imshow("janela", image); 
+  
+  waitKey();
+  return 0;
+}
+{% endhighlight %}
+
+O algoritmo cap3.cpp inicialmente chama uma função, chamada de "limpaborda", que irá remover, como já comentado as bolhas das bordas da imagem. E em seguida, chama a função "contaburaco", que irá contar o número de bolhas e o número de bolhas com buracos, além de imprimir os resultados na tela.
+
+[jekyll-docs]: https://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/
