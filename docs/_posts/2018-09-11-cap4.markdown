@@ -96,12 +96,12 @@ Problema 2:
 
 Agora, o programa acima foi modificado para calcular, continuamente, diferenças entre o histograma do frame mais recente e o histograma de um frame anterior, com o intuito de detectar movimentos entre os dois frames utilizados para cálculo dos histogramas. O algoritmo foi chamado de motiondetector.cpp e está detalhado a seguir:
 
-{% highlight ruby %}
-#include <iostream>
-#include <opencv2/opencv.hpp>
+	{% highlight ruby %}
+	#include <iostream>
+	#include <opencv2/opencv.hpp>
 
-using namespace cv;
-using namespace std;
+	using namespace cv;
+	using namespace std;
 
 int main(int argc, char** argv){
   Mat image1, image2, cinza1(256,256,CV_8U), cinza2(256,256,CV_8U);
@@ -162,10 +162,10 @@ int main(int argc, char** argv){
 	histImgC1.copyTo(cinza1(Rect(0, 0,nbins, histh)));
 	imshow("Tom Cinza", cinza1);
 
-  }
-  return 0;
-}
-{% endhighlight %}
+ 	 }
+ 	 return 0;
+	}
+	{% endhighlight %}
 
 Para esse algortimo utiliza-se uma função que calcula a "distância" entre os histogramas, ou seja calcula a diferença. Para realizar isto o OpenCV disponibiliza uma função ("compareHist(histC2,histC1,CV_COMP_BHATTACHARYYA)"), que recebe como parâmetros apenas os histogramas que serão calculados e o tipo de comparação que se deseja realizar. No caso desse algoritmo foi utilizado o método de distância de Bhattacharyya. É importante obserjar que o programa recebe em dois momentos as imagens capturadas pelas câmera, nas linhas 37 e 45. E ainda, entre estas duas aquisições de imagens, o programa aguarda 50 ms, através da função "waitKey(50)", para garantir que as imagens são minimamente diferentes.
 
