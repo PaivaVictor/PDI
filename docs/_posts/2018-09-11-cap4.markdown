@@ -83,10 +83,10 @@ int main(int argc, char** argv){
 
     imshow("image", image);
   
-  }
-  return 0;
-}
-{% endhighlight %}
+	}
+	return 0;
+	}
+	{% endhighlight %}
 
 Neste algoritmo foram utilizadas funções prontas do OpenCV tanto para realizar a conversão das imagens em RGB capturadas pela câmera ("cvtColor(image,cinza,CV_BGR2GRAY)") quanto para calcular o histograma ("calcHist(&equalized,1,0,Mat(),equa,1,&nbins,&histrange,uniform,acummulate)") e realizar a equalização ("equalizeHist(cinza, equalized)").
 
