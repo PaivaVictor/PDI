@@ -12,9 +12,8 @@ A proposta é adaptar o algoritmo para o sistema RGB, assim haverá 16581375 (25
 
 Programa labeling.cpp:
 
-{% highlight ruby %}
-
-#include <iostream>
+{% highlight ruby %} 
+#include <iostream> 	
 #include <opencv2/opencv.hpp>
 
 using namespace cv;
