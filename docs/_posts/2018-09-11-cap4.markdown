@@ -10,46 +10,46 @@ O código abaixo, equalizacao.cpp, utiliza uma câmera webcam, e portanto, uma n
 
 O Programa equalizacao.cpp:
 
-{% highlight ruby %}
-#include <iostream>
-#include <opencv2/opencv.hpp>
+	{% highlight ruby %}
+	#include <iostream>
+	#include <opencv2/opencv.hpp>
 
-using namespace cv;
-using namespace std;
+	using namespace cv;
+	using namespace std;
 
-int main(int argc, char** argv){
-  Mat image, cinza(256,256,CV_8U), equalized(256,256,CV_8U);
-  int width, height;
-  VideoCapture cap;
-  Mat histC(64,64,CV_8U), equa(64,64,CV_8U);
-  int nbins = 64, channel = 0;
-  float range[] = {0, 256};
-  const float *histrange = { range };
-  bool uniform = true;
-  bool acummulate = false;
+	int main(int argc, char** argv){
+ 	 Mat image, cinza(256,256,CV_8U), equalized(256,256,CV_8U);
+ 	 int width, height;
+ 	VideoCapture cap;
+ 	 Mat histC(64,64,CV_8U), equa(64,64,CV_8U);
+ 	 int nbins = 64, channel = 0;
+	  float range[] = {0, 256};
+ 	 const float *histrange = { range };
+ 	 bool uniform = true;
+	  bool acummulate = false;
 
-  cap.open(0);
+ 	 cap.open(0);
   
-  if(!cap.isOpened()){
-    cout << "cameras indisponiveis" << endl;
-    return -1;
-  }
+ 	 if(!cap.isOpened()){
+ 	   cout << "cameras indisponiveis" << endl;
+ 	   return -1;
+ 	 }
   
-  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
-  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+	  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+ 	 height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
 
-  cout << "largura = " << width << endl;
-  cout << "altura  = " << height << endl;
+ 	 cout << "largura = " << width << endl;
+ 	 cout << "altura  = " << height << endl;
   
-  int histw = nbins, histh = nbins/2;
-  Mat histImgC(histh, histw, CV_8U, Scalar(0));
-  Mat histEquC(histh, histw, CV_8U, Scalar(0));
+ 	 int histw = nbins, histh = nbins/2;
+ 	 Mat histImgC(histh, histw, CV_8U, Scalar(0));
+ 	 Mat histEquC(histh, histw, CV_8U, Scalar(0));
 
-  namedWindow("Histograma",WINDOW_AUTOSIZE);
+ 	 namedWindow("Histograma",WINDOW_AUTOSIZE);
 
-  while(waitKey(30)!=32){
-    cap >> image;
-	cvtColor(image,cinza,CV_BGR2GRAY);
+ 	 while(waitKey(30)!=32){
+		cap >> image;
+		cvtColor(image,cinza,CV_BGR2GRAY);
 
 	equalizeHist(cinza, equalized);
 
