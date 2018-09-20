@@ -24,14 +24,10 @@ int main(int, char**){
 
   for(int i= p1x; i<= p2x;i++){
     for(int j= p1y; j<= p2y; j++){
-	//cout << "entrei1" << endl;
     aux = image.at<uchar>(i,j);
-	//cout << "fudeu a mariola" << endl;
     image.at<uchar>(i,j) = 255 - aux;	
-	//cout << "entrei2" << endl;
     }
   }
-	//cout << "sai" << endl;
   imshow("image", image);
   waitKey();
   return 0;

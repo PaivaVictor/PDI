@@ -1,3 +1,29 @@
+= Manipulação de Histogramas
+
+== *Problema 1:*
+
+O código abaixo, equalizacao.cpp, utiliza uma câmera webcam, e portanto, uma nova classe do OpenCV, VideoCapture. O algoritmo irá realizar a equalização (melhor distribuição do histograma pelo spectro de tons) das imagens em tons de cinza capturadas pela webcam, frame a frame, e exibir o histograma dessas imagens juntamente da imagem equalizada. Como exemplo, temos a Figure 1, antes da equalização, apenas a imagem capturada pela câmera em tons de cinza.
+
+:imagesdir:
+
+.Imagem normal, em tons de cinza.
+
+image::cinza.png[]
+
+Observe que o histograma, no canto superior esquerdo, apresenta algumas elevações desproporcionais el alguns pontos, ou seja, alguns picos. A Figure 2 é a imagem equalizada pelo algoritmo equalizacao.cpp.
+
+.Imagem equalizada.
+
+image::equalizado.png[]
+
+Em contraste com a Figure 1, o histograma da Figure 2 é bem mais constante, sem a presença dos picos mencionados. Também é fácil observar a distorção nos detalhes muito claros na imagem, causados pela função de equalização. Em alguns pontos é possível ver os pixels mais claros.
+
+As principais funções do OpenCV utilizadas foram: _equalizeHist_ que realiza a equalização da imagem e _calcHist_ que calcula o histograma da imagem. A função cvtColor realiza a conversão da imagem com tons em RGB para tons de cinza.
+
+O Programa equalizacao.cpp:
+
+[source, C++]
+----
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -8,7 +34,6 @@ int main(int argc, char** argv){
   Mat image, cinza(256,256,CV_8U), equalized(256,256,CV_8U);
   int width, height;
   VideoCapture cap;
- // vector<Mat> planes;
   Mat histC(64,64,CV_8U), equa(64,64,CV_8U);
   int nbins = 64, channel = 0;
   float range[] = {0, 256};
@@ -70,7 +95,13 @@ int main(int argc, char** argv){
      	imshow("Equalizado", equalized);
 
     imshow("image", image);
-  
+    if(waitKey(30) == 'f'){
+	imwrite("equalizado.png", equalized);
+	imwrite("cinza.png", cinza);
+	}
   }
   return 0;
 }
+----
+
+== *Problema 2:*
