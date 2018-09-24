@@ -43,24 +43,21 @@ int main(int argvc, char** argv){
 					 -1,4,-1,
 					 0,-1,0};
 
-  float laplgauss[]={-2,-4,-2,
-					6,12,6,
-					-2,-4,-2};
-
-  Mat cap, frame, frame32f, frameFiltered;
+  Mat cap, frame, frame32f, frameFiltered, frameFiltered2;
   Mat mask(3,3,CV_32F), mask1;
   Mat result, result1;
   double width, height, min, max;
   int absolut;
   char key;
+  bool lp = 0;
   
   video.open(0); 
   if(!video.isOpened()) 
     return -1;
   width=video.get(CV_CAP_PROP_FRAME_WIDTH);
   height=video.get(CV_CAP_PROP_FRAME_HEIGHT);
-  std::cout << "largura=" << width << "\n";;
-  std::cout << "altura =" << height<< "\n";;
+  cout << "largura=" << width << "\n";
+  cout << "altura =" << height<< "\n";
 
   namedWindow("filtroespacial",1);
 
@@ -76,12 +73,19 @@ int main(int argvc, char** argv){
     flip(frame, frame, 1);
     imshow("original", frame);
     frame.convertTo(frame32f, CV_32F);
-    filter2D(frame32f, frameFiltered,
-			 frame32f.depth(), mask, Point(1,1), 0);
-    if(absolut){
+    filter2D(frame32f, frameFiltered,frame32f.depth(), mask, Point(-1,-1), 0);
+	if(absolut){
       frameFiltered=abs(frameFiltered);
     }
+    if(lp == true){
+	mask = Mat(3, 3, CV_32F, laplacian);
+      printmask(mask);
+	filter2D(frameFiltered, frameFiltered2,frame32f.depth(), mask, Point(-1,-1), 0);
+	frameFiltered2.convertTo(result, CV_8U);	
+}
+    else
     frameFiltered.convertTo(result, CV_8U);
+
     imshow("filtroespacial", result);
     key = (char) waitKey(10);
     if( key == 27 ){
@@ -92,6 +96,7 @@ int main(int argvc, char** argv){
     case 'a':
 	  menu();
       absolut=!absolut;
+	lp = false;
       break;
     case 'm':
 	  menu();
@@ -99,6 +104,7 @@ int main(int argvc, char** argv){
       scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
       mask = mask1;
       printmask(mask);
+	lp = false;
       break;
     case 'g':
 	  menu();
@@ -106,32 +112,39 @@ int main(int argvc, char** argv){
       scaleAdd(mask, 1/16.0, Mat::zeros(3,3,CV_32F), mask1);
       mask = mask1;
       printmask(mask);
+	lp = false;
       break;
     case 'h':
 	  menu();
       mask = Mat(3, 3, CV_32F, horizontal);
       printmask(mask);
+	lp = false;
       break;
     case 'v':
 	  menu();
       mask = Mat(3, 3, CV_32F, vertical);
       printmask(mask);
+	lp = false;
       break;
     case 'l':
 	  menu();
       mask = Mat(3, 3, CV_32F, laplacian);
       printmask(mask);
+	lp = false;
       break;
     case 'p':
 	  menu();
-      mask = Mat(3, 3, CV_32F, laplgauss);
+	mask = Mat(3, 3, CV_32F, gauss);
       scaleAdd(mask, 1/16.0, Mat::zeros(3,3,CV_32F), mask1);
       mask = mask1;
       printmask(mask);
-      break;
+	lp = true;
+
+	break;
     default:
       break;
     }
+
   }
   return 0;
 }
