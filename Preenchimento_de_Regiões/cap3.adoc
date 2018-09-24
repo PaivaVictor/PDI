@@ -1,3 +1,6 @@
+:toc: left
+:source-highlighter: highlightjs
+
 = Preenchimento de Regiões
 
 == *Problema 1:*

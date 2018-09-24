@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7.1">
-<title>Manipulação de Pixels</title>
+<title>Processamento Digital de Imagens</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -430,166 +430,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<h1>Manipulação de Pixels</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_problema_1"><strong>Problema 1:</strong></a></li>
-<li><a href="#_problema_2"><strong>Problema 2:</strong></a></li>
-</ul>
-</div>
+<h1>Processamento Digital de Imagens</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_problema_1"><strong>Problema 1:</strong></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Esse exercício consiste em fazer a inversão de tonalidade de cinza da imagem base, "Biel.png".</p>
+<p>Este site irá descrever alguns exercícios que trabalham com conceitos de PDI. Os temas abordados aqui seguem a sequência:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="biel.png" alt="Biel">
-</div>
-<div class="title">Figure 1. Biel.png usado como entrada do programa.</div>
-</div>
-<div class="paragraph">
-<p>O programa tem como entrada a imagem da Figure 1 e os parâmetros das regiões que se deseja realizar o negativo. Ou seja, o programa pede quatro coordenadas, que devem estar compreendidas entre 0 e 255, em valores inteiros, por se tratar da posição dos pixels. Caso seja necessário realizar o negativo de toda a imagem basta inserir os pontos (0,255) tanto para o ponto 1 quanto para o ponto 2. A operação realizada pelo algoritmo é apenas a subtração do valor original do pixel de 255.</p>
-</div>
-<div class="paragraph">
-<p>Programa regions.cpp que realiza o negativo:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++">#include &lt;iostream&gt;
-#include &lt;opencv2/opencv.hpp&gt;
-
-using namespace cv;
-using namespace std;
-
-int main(int, char**){
-
-  int p1x = 0, p1y = 0, p2x = 0, p2y = 0;
-  char aux;
-  Mat image;
-  image = imread("biel.png",CV_LOAD_IMAGE_GRAYSCALE);
-
-  cout &lt;&lt; "Insira duas coordenadas para o ponto P1: " &lt;&lt; endl;
-  cout &lt;&lt; "P1x: ";
-  cin &gt;&gt; p1x;
-  cout &lt;&lt; "P1y: ";
-  cin &gt;&gt; p1y;
-  cout &lt;&lt; "Insira duas coordenadas para o ponto P2: " &lt;&lt; endl;
-  cout &lt;&lt; "P2x: ";
-  cin &gt;&gt; p2x;
-  cout &lt;&lt; "P2y: ";
-  cin &gt;&gt; p2y;
-
-  for(int i= p1x; i&lt;= p2x;i++){
-    for(int j= p1y; j&lt;= p2y; j++){
-    aux = image.at&lt;uchar&gt;(i,j);
-    image.at&lt;uchar&gt;(i,j) = 255 - aux;
-    }
-  }
-  imshow("image", image);
-  imwrite("negativo.png",image);
-  waitKey();
-  return 0;
-}</code></pre>
-</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="../Manipulação_de_Pixels/cap2.html">Manipulação de Pixels</a></p>
+</li>
+<li>
+<p><a href="../Preenchimento_de_Regiões/cap3.html">Preenchimento de Regiões</a></p>
+</li>
+<li>
+<p><a href="../Manipulação_de_Histogramas/cap4.html">Manipulação de Histogramas</a></p>
+</li>
+<li>
+<p><a href="../Filtragem_no_Domínio_Espacial_I/cap5.html">Filtragem no Domínio Espacial I</a></p>
+</li>
+<li>
+<p><a href="../Filtragem_no_Domínio_Espacial_II/cap6.html">Filtragem no Domínio Espacial II</a></p>
+</li>
+<li>
+<p><a href="../Filtragem_no_Domínio_da_Frequência/cap7.html">Filtragem no Domínio da Frequência</a></p>
+</li>
+<li>
+<p><a href="../Algoritmo_de_Canny/cap8.html">Detectação de Bordas com Algoritmo de Canny</a></p>
+</li>
+<li>
+<p><a href="../K-means/cap9.html">Quantização Vetorial com K-means</a></p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>A saída do programa é a Figure 2, para o caso de se realizar o negativo em apenas uma região:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="negativo.png" alt="negativo">
-</div>
-<div class="title">Figure 2. Saída do programa regions.cpp.</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_problema_2"><strong>Problema 2:</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Agora, a problemática consiste em realizar a troca das regiões da mesma imagem base, da Figure 1. No caso, o programa deve gerar uma saída como na Figure 3. O algoritmo trocaregioes.cpp está descrito a seguir:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++">#include &lt;iostream&gt;
-#include &lt;opencv2/opencv.hpp&gt;
-
-using namespace cv;
-using namespace std;
-
-void troca(Mat &amp;original)
-{
-
-Mat parte(256,256,CV_8UC1, Scalar(0));
-
-	int i, j;
-	for(i = 0; i &lt;= 127; i++){
-
-		for(j = 0; j &lt;= 127; j++){
-
-			parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i+128,j+128);
-		}
-		}
-
-	for(i = 0; i &lt;= 127; i++){
-		for(j = 128; j &lt;= 255; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i+128,j-128);
-		}
-	}
-
-	for(i = 128; i &lt;= 255; i++){
-		for(j = 0; j &lt;= 127; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i-128,j+128);
-		}
-	}
-
-	for(i = 128; i &lt;= 255 ; i++){
-		for(j = 128; j &lt;= 255; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i-128,j-128);
-		}
-	}
-	imshow("trocado", parte);
-	imwrite("trocado.png", parte);
-}
-
-int main(){
-
-  Mat image;
-
-  image = imread("biel.png",CV_LOAD_IMAGE_GRAYSCALE);
-	if(!image.data)
-		cout &lt;&lt; "Não abriu a imagem" &lt;&lt; endl;
-  troca(image);
-
-  imshow("original", image);
-
-  waitKey();
-  return 0;
-}</code></pre>
-</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="trocado.png" alt="Trocado">
-</div>
-<div class="title">Figure 3. Troca dos quadrantes da Figure 1.</div>
-</div>
-<div class="paragraph">
-<p>Existem funções no OpenCV que auxiliam a realização dessa troca de quadrantes de uma imagem, mas o algoritmo acima trabalha mais fortemente a noção dos pixels, como é a proposta do tema destes projetos. Assim, é necessário saber onde começa cada quadrante, por exemplo, o quadrante 1, começando da origem (normal) da imagem, inicia no pixel i = 0 e j = 0, e termina no pixel i = 127 e j = 127; já o quadrante 4 inicia no pixel i = 128 e j = 128, e termina no pixel i = 255 e j= 255.</p>
-</div>
-</div>
+<p>As programações contidas nessas temáticas foram desenvolvidas em linguagem C++.</p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-24 14:15:01 -03
+Last updated 2018-09-17 18:33:25 -03
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

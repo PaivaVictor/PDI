@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.7.1">
-<title>Manipulação de Pixels</title>
+<title>Filtragem no Domínio Espacial I</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -430,35 +430,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<h1>Manipulação de Pixels</h1>
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#_problema_1"><strong>Problema 1:</strong></a></li>
-<li><a href="#_problema_2"><strong>Problema 2:</strong></a></li>
-</ul>
-</div>
+<h1>Filtragem no Domínio Espacial I</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_problema_1"><strong>Problema 1:</strong></h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Esse exercício consiste em fazer a inversão de tonalidade de cinza da imagem base, "Biel.png".</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="biel.png" alt="Biel">
-</div>
-<div class="title">Figure 1. Biel.png usado como entrada do programa.</div>
+<p>Utilizando o código abaixo como referência, pretende-se implementar uma função que aplique os filtros gauss e laplaciano, exatamente nesta ordem, e exiba o resultado durante a captura de vídeo. O algoritmo abaixo já realiza ambas as funções, porém de forma separada.<br>
+Pressionando a tecla "g" aplica-se o filtro de gauss e pressionando a tecla "l", o filtro do laplaciano.</p>
 </div>
 <div class="paragraph">
-<p>O programa tem como entrada a imagem da Figure 1 e os parâmetros das regiões que se deseja realizar o negativo. Ou seja, o programa pede quatro coordenadas, que devem estar compreendidas entre 0 e 255, em valores inteiros, por se tratar da posição dos pixels. Caso seja necessário realizar o negativo de toda a imagem basta inserir os pontos (0,255) tanto para o ponto 1 quanto para o ponto 2. A operação realizada pelo algoritmo é apenas a subtração do valor original do pixel de 255.</p>
-</div>
-<div class="paragraph">
-<p>Programa regions.cpp que realiza o negativo:</p>
+<p>O algoritmo base filtroespacial.cpp:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -468,128 +450,170 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 using namespace cv;
 using namespace std;
 
-int main(int, char**){
-
-  int p1x = 0, p1y = 0, p2x = 0, p2y = 0;
-  char aux;
-  Mat image;
-  image = imread("biel.png",CV_LOAD_IMAGE_GRAYSCALE);
-
-  cout &lt;&lt; "Insira duas coordenadas para o ponto P1: " &lt;&lt; endl;
-  cout &lt;&lt; "P1x: ";
-  cin &gt;&gt; p1x;
-  cout &lt;&lt; "P1y: ";
-  cin &gt;&gt; p1y;
-  cout &lt;&lt; "Insira duas coordenadas para o ponto P2: " &lt;&lt; endl;
-  cout &lt;&lt; "P2x: ";
-  cin &gt;&gt; p2x;
-  cout &lt;&lt; "P2y: ";
-  cin &gt;&gt; p2y;
-
-  for(int i= p1x; i&lt;= p2x;i++){
-    for(int j= p1y; j&lt;= p2y; j++){
-    aux = image.at&lt;uchar&gt;(i,j);
-    image.at&lt;uchar&gt;(i,j) = 255 - aux;
+void printmask(Mat &amp;m){
+  for(int i=0; i&lt;m.size().height; i++){
+    for(int j=0; j&lt;m.size().width; j++){
+      cout &lt;&lt; m.at&lt;float&gt;(i,j) &lt;&lt; ",";
     }
+    cout &lt;&lt; endl;
   }
-  imshow("image", image);
-  imwrite("negativo.png",image);
-  waitKey();
-  return 0;
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>A saída do programa é a Figure 2, para o caso de se realizar o negativo em apenas uma região:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="negativo.png" alt="negativo">
-</div>
-<div class="title">Figure 2. Saída do programa regions.cpp.</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_problema_2"><strong>Problema 2:</strong></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Agora, a problemática consiste em realizar a troca das regiões da mesma imagem base, da Figure 1. No caso, o programa deve gerar uma saída como na Figure 3. O algoritmo trocaregioes.cpp está descrito a seguir:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++">#include &lt;iostream&gt;
-#include &lt;opencv2/opencv.hpp&gt;
-
-using namespace cv;
-using namespace std;
-
-void troca(Mat &amp;original)
-{
-
-Mat parte(256,256,CV_8UC1, Scalar(0));
-
-	int i, j;
-	for(i = 0; i &lt;= 127; i++){
-
-		for(j = 0; j &lt;= 127; j++){
-
-			parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i+128,j+128);
-		}
-		}
-
-	for(i = 0; i &lt;= 127; i++){
-		for(j = 128; j &lt;= 255; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i+128,j-128);
-		}
-	}
-
-	for(i = 128; i &lt;= 255; i++){
-		for(j = 0; j &lt;= 127; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i-128,j+128);
-		}
-	}
-
-	for(i = 128; i &lt;= 255 ; i++){
-		for(j = 128; j &lt;= 255; j++){
-		parte.at&lt;uchar&gt;(i,j) = original.at&lt;uchar&gt;(i-128,j-128);
-		}
-	}
-	imshow("trocado", parte);
-	imwrite("trocado.png", parte);
 }
 
-int main(){
+void menu(){
+  cout &lt;&lt; "\npressione a tecla para ativar o filtro: \n"
+	"a - calcular modulo\n"
+    "m - media\n"
+    "g - gauss\n"
+    "v - vertical\n"
+	"h - horizontal\n"
+    "l - laplaciano\n"
+	"esc - sair\n";
+}
 
-  Mat image;
+int main(int argvc, char** argv){
+  VideoCapture video;
+  float media[] = {1,1,1,
+				   1,1,1,
+				   1,1,1};
+  float gauss[] = {1,2,1,
+				   2,4,2,
+				   1,2,1};
+  float horizontal[]={-1,0,1,
+					  -2,0,2,
+					  -1,0,1};
+  float vertical[]={-1,-2,-1,
+					0,0,0,
+					1,2,1};
+  float laplacian[]={0,-1,0,
+					 -1,4,-1,
+					 0,-1,0};
 
-  image = imread("biel.png",CV_LOAD_IMAGE_GRAYSCALE);
-	if(!image.data)
-		cout &lt;&lt; "Não abriu a imagem" &lt;&lt; endl;
-  troca(image);
+  Mat cap, frame, frame32f, frameFiltered;
+  Mat mask(3,3,CV_32F), mask1;
+  Mat result, result1;
+  double width, height, min, max;
+  int absolut;
+  char key;
 
-  imshow("original", image);
+  video.open(0);
+  if(!video.isOpened())
+    return -1;
+  width=video.get(CV_CAP_PROP_FRAME_WIDTH);
+  height=video.get(CV_CAP_PROP_FRAME_HEIGHT);
+  std::cout &lt;&lt; "largura=" &lt;&lt; width &lt;&lt; "\n";;
+  std::cout &lt;&lt; "altura =" &lt;&lt; height&lt;&lt; "\n";;
 
-  waitKey();
+  namedWindow("filtroespacial",1);
+
+  mask = Mat(3, 3, CV_32F, media);
+  scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
+  swap(mask, mask1);
+  absolut=1; // calcs abs of the image
+
+  menu();
+  for(;;){
+    video &gt;&gt; cap;
+    cvtColor(cap, frame, CV_BGR2GRAY);
+    flip(frame, frame, 1);
+    imshow("original", frame);
+    frame.convertTo(frame32f, CV_32F);
+    filter2D(frame32f, frameFiltered,
+			 frame32f.depth(), mask, Point(1,1), 0);
+    if(absolut){
+      frameFiltered=abs(frameFiltered);
+    }
+    frameFiltered.convertTo(result, CV_8U);
+    imshow("filtroespacial", result);
+    key = (char) waitKey(10);
+    if( key == 27 ) break; // esc pressed!
+    switch(key){
+    case 'a':
+	  menu();
+      absolut=!absolut;
+      break;
+    case 'm':
+	  menu();
+      mask = Mat(3, 3, CV_32F, media);
+      scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
+      mask = mask1;
+      printmask(mask);
+      break;
+    case 'g':
+	  menu();
+      mask = Mat(3, 3, CV_32F, gauss);
+      scaleAdd(mask, 1/16.0, Mat::zeros(3,3,CV_32F), mask1);
+      mask = mask1;
+      printmask(mask);
+      break;
+    case 'h':
+	  menu();
+      mask = Mat(3, 3, CV_32F, horizontal);
+      printmask(mask);
+      break;
+    case 'v':
+	  menu();
+      mask = Mat(3, 3, CV_32F, vertical);
+      printmask(mask);
+      break;
+    case 'l':
+	  menu();
+      mask = Mat(3, 3, CV_32F, laplacian);
+      printmask(mask);
+      break;
+    default:
+      break;
+    }
+  }
   return 0;
 }</code></pre>
 </div>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="trocado.png" alt="Trocado">
-</div>
-<div class="title">Figure 3. Troca dos quadrantes da Figure 1.</div>
+<div class="paragraph">
+<p>Aplicando os filtros numa imagem qualquer, em tons de cinza, temos os efeitos:</p>
 </div>
 <div class="paragraph">
-<p>Existem funções no OpenCV que auxiliam a realização dessa troca de quadrantes de uma imagem, mas o algoritmo acima trabalha mais fortemente a noção dos pixels, como é a proposta do tema destes projetos. Assim, é necessário saber onde começa cada quadrante, por exemplo, o quadrante 1, começando da origem (normal) da imagem, inicia no pixel i = 0 e j = 0, e termina no pixel i = 127 e j = 127; já o quadrante 4 inicia no pixel i = 128 e j = 128, e termina no pixel i = 255 e j= 255.</p>
+<p>Com o filtro gaussiano:</p>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="foto_gauss.png" alt="Gauss">
+</div>
+<div class="title">Figure 1. Resultado da aplicação do filtro gaussiano.</div>
+</div>
+<div class="paragraph">
+<p>Com o filtro laplaciano:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="foto_laplaciano.png" alt="Laplace">
+</div>
+<div class="title">Figure 2. Resultado da aplicação do filtro laplaciano.</div>
+</div>
+<div class="paragraph">
+<p>A diferença entre as duas imagens, Figure 1 e Figure 2, é imensa. O filtro laplaciano faz detecção de contornos da imagem, enquanto que o filtro de gauss elimina alguns ruídos fazendo uma média da imagem. O resultado do filtro gauss+laplaciano pode ser visto na imagem a seguir:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="foto_laplgauss.png" alt="laplgauss">
+</div>
+<div class="title">Figure 3. Resultado da aplicação do filtro de gauss seguido do filtro laplaciano.</div>
+</div>
+<div class="paragraph">
+<p>É possível observar que a aplicação de ambos os filtros retorna uma resultado próximo do obtido com a Figure 2, laplaciano. No entanto, a aplicação de gauss com laplaciano ressalta melhor os tons de cinza dos contornos da imagem ao mesmo tempo que reduz a nitidez destes.</p>
+</div>
+<div class="paragraph">
+<p>O algoritmo implementado está descrito a seguir e acrescenta uma tecla, "p", para a chamada dessa filtragem.</p>
+</div>
+<div class="listingblock">
+<div class="title">Algoritmo implementado, laplgauss.cpp.</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++"></code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-24 14:15:01 -03
+Last updated 2018-09-24 14:13:46 -03
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

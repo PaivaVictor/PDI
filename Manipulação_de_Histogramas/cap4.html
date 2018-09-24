@@ -430,9 +430,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>Manipulação de Histogramas</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_problema_1"><strong>Problema 1:</strong></a></li>
+<li><a href="#_problema_2"><strong>Problema 2:</strong></a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div class="sect1">
@@ -467,7 +474,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-C++" data-lang="C++">#include &lt;iostream&gt;
+<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++">#include &lt;iostream&gt;
 #include &lt;opencv2/opencv.hpp&gt;
 
 using namespace cv;
@@ -552,14 +559,100 @@ int main(int argc, char** argv){
 <div class="sect1">
 <h2 id="_problema_2"><strong>Problema 2:</strong></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>O algoritmo abaixo calcula a diferença entre histogramas e quando essa diferença é maior do que um certo limiar (variável de nome "tolerância"), no caso do código, é igual a 5. O método escolhido para o cálculo dessa diferença foi o de Bhattacharyya, que é o parâmetro de entrada da função <em>compareHist</em>. A diferença de tempo entre os frames capturados é apenas o tempo de cáculo e execução e um <em>waitKey</em> de 50 ms inserido apenas para garantir que exista alguma diferença entre as imagens. A saída dessa função é um valor muito pequeno (bem menor do que 1), e por isso foi multiplicado por 100. Como saída do programa, temos a mensagem exibida no monitor, na Figure 3.</p>
+</div>
+<div class="paragraph">
+<p>Programa motiondetector.cpp:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-C++ hljs" data-lang="C++">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
 
+using namespace cv;
+using namespace std;
+
+int main(int argc, char** argv){
+  Mat image1, image2, cinza1(256,256,CV_8U), cinza2(256,256,CV_8U);
+  int width, height;
+  VideoCapture cap1;
+  Mat histC1(64,64,CV_8U), histC2(64,64,CV_8U);
+  int nbins = 64, channel = 0;
+  float range[] = {0, 256}, tolerancia = 5, distancia=0;
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+
+  cap1.open(0);
+
+  if(!cap1.isOpened()){
+    cout &lt;&lt; "cameras indisponiveis" &lt;&lt; endl;
+    return -1;
+  }
+
+  width  = cap1.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap1.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  cout &lt;&lt; "largura = " &lt;&lt; width &lt;&lt; endl;
+  cout &lt;&lt; "altura  = " &lt;&lt; height &lt;&lt; endl;
+
+  int histw = nbins, histh = nbins/2;
+  Mat histImgC1(histh, histw, CV_8U, Scalar(0));
+
+  while(waitKey(30)!=32){
+
+
+	cap1 &gt;&gt; image1;
+	cvtColor(image1,cinza1,CV_BGR2GRAY);
+	waitKey(50);
+
+	calcHist(&amp;cinza1,1,0,Mat(),histC1,1,&amp;nbins,&amp;histrange,uniform,acummulate);  //Histograma para imagem cinza normal
+	normalize(histC1, histC1, 0, histImgC1.rows, NORM_MINMAX, -1, Mat());
+  	histImgC1.setTo(Scalar(0));
+
+	cap1 &gt;&gt; image2;
+	cvtColor(image2,cinza2,CV_BGR2GRAY);
+
+	calcHist(&amp;cinza2,1,0,Mat(),histC2,1,&amp;nbins,&amp;histrange,uniform,acummulate);
+
+	distancia=compareHist(histC2,histC1,CV_COMP_BHATTACHARYYA);
+
+	if(distancia*100&gt;tolerancia){
+	cout &lt;&lt; "Movimento!!" &lt;&lt; endl;
+	}
+
+	for(int i=0; i&lt;nbins; i++){
+      line(histImgC1,
+           Point(i, histh),
+           Point(i, histh-cvRound(histC1.at&lt;float&gt;(i))),
+           Scalar(255), 1, 8, 0);
+    }
+
+	histImgC1.copyTo(cinza1(Rect(0, 0,nbins, histh)));
+	imshow("Tom Cinza", cinza1);
+
+  }
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="motiondetector.png" alt="motion">
+</div>
+<div class="title">Figure 3. Saída do programa motiondetector.cpp, movimento detectado.</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-19 21:12:39 -03
+Last updated 2018-09-24 15:07:59 -03
 </div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
 </body>
 </html>
