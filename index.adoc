@@ -1,0 +1,19 @@
+= Victor Paiva de Oliveira
+
+:toc: left
+:source-highlighter: highlightjs
+
+== Who am I and what I do?
+
+I'm Victor Paiva de Oliveira, I have 21 years old, born in Mossoró, but rised in Assu, both cities from the state of Rio Grande do Norte, Brazil. Nowadays I study electrical engineering (undergraduate) in Federal University of Rio Grande do Norte (UFRN) in Natal.
+
+== This Repository
+
+Here, you will find some contents that I have studied on my five years of undergraduate course. So here it is:
+
+1. link:PDI.html[Image Digital Processing]
+2. link:asm.html[Root Calculator in Radasm]
+3. link:lora.html[LoRa]
+4. link:rampgen.html[Simple Integrator for AD Converter]
+
+The Simple Integrator for AD Converter is the Thesis of my undergraduate course that I will simulate one block of the whole ADC, the ramp generator.  I will use the tools of Cadence and concepts of microelectronics, to create some more faithful to reality.

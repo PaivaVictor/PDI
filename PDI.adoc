@@ -1,0 +1,16 @@
+= Processamento Digital de Imagens
+:toc: left
+:source-highlighter: highlightjs
+
+Este site irá descrever alguns exercícios que trabalham com conceitos de PDI. Os temas abordados aqui seguem a sequência:
+
+1. link:../Manipulação_de_Pixels/cap2.html[Manipulação de Pixels]
+2. link:../Preenchimento_de_Regiões/cap3.html[Preenchimento de Regiões]
+3. link:../Manipulação_de_Histogramas/cap4.html[Manipulação de Histogramas]
+4. link:../Filtragem_no_Domínio_Espacial_I/cap5.html[Filtragem no Domínio Espacial I]
+5. link:../Filtragem_no_Domínio_Espacial_II/cap6.html[Filtragem no Domínio Espacial II]
+6. link:../Filtragem_no_Domínio_da_Frequência/cap7.html[Filtragem no Domínio da Frequência]
+7. link:../Algoritmo_de_Canny/cap8.html[Detectação de Bordas com Algoritmo de Canny]
+8. link:../K-means/cap9.html[Quantização Vetorial com K-means]
+
+As programações contidas nessas temáticas foram desenvolvidas em linguagem C++.
