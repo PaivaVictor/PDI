@@ -4,7 +4,7 @@
 
 Este site irá descrever alguns exercícios que trabalham com conceitos de PDI. Os temas abordados aqui seguem a sequência:
 
-1. link:Manipulacao/cap2.html[Manipulação de Pixels]
+1. link:Manipulacao_de_Pixels/cap2.html[Manipulação de Pixels]
 2. link:Preenchimento_de_Regiões/cap3.html[Preenchimento de Regiões]
 3. link:Manipulação_de_Histogramas/cap4.html[Manipulação de Histogramas]
 4. link:Filtragem_no_Domínio_Espacial_I/cap5.html[Filtragem no Domínio Espacial I]
