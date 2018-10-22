@@ -1,0 +1,17 @@
+:toc: left
+:source-highlighter: highlightjs
+
+= Filtro Homomorfico
+
+O código abaixo, equalizacao.cpp, utiliza uma câmera webcam, e portanto, uma nova classe do OpenCV, VideoCapture. O algoritmo irá realizar a equalização (melhor distribuição do histograma pelo spectro de tons) das imagens em tons de cinza capturadas pela webcam, frame a frame, e exibir o histograma dessas imagens juntamente da imagem equalizada. Como exemplo, temos a Figure 1, antes da equalização, apenas a imagem capturada pela câmera em tons de cinza.
+
+:imagesdir:
+
+Programa criado:
+
+[source, C++]
+----
+
+----
+
+
