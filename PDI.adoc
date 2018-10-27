@@ -9,7 +9,7 @@ Este site irá descrever alguns exercícios que trabalham com conceitos de PDI. 
 3. link:Manipulacao_de_Histogramas/cap4.html[Manipulação de Histogramas]
 4. link:Filtragem_no_Dominio_Espacial_I/cap5.html[Filtragem no Domínio Espacial I]
 5. link:Filtragem_no_Dominio_Espacial_II/cap6.html[Filtragem no Domínio Espacial II]
-6. link:Filtragem_no_Dominio_da_Frequência/cap7.html[Filtragem no Domínio da Frequência]
+6. link:Filtragem_no_Dominio_da_Frequencia/cap7.html[Filtragem no Domínio da Frequência]
 7. link:Algoritmo_de_Canny/cap8.html[Detectação de Bordas com Algoritmo de Canny]
 8. link:K-means/cap9.html[Quantização Vetorial com K-means]
 
